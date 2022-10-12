@@ -24,7 +24,6 @@ public class ShowBody {
 	private JogoDaForca jogo;
 	private String Chute;
 	ArrayList<Integer> posicoes;
-	String[] penalidades = {"perna1", "perna2", "bra�o1", "bra�o2", "tronco", "cabe�a"};
 	private String[] imagens = {"0.png", "1.png", "2.png", "3.png", "4.png", "5.png", "6.png"};
 	private JLabel label_3;
 	private JLabel label_4;
