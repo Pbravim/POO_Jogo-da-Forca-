@@ -68,15 +68,15 @@ public class ShowBody {
 		button = new JButton("Iniciar");
 		button.setBounds(51, 215, 85, 21);
 		frame.getContentPane().add(button);
-		
+
 		label = new JLabel("Dica: ");
-		label.setBounds(82, 28, 174, 20);
+		label.setBounds(51, 28, 205, 20);
 		frame.getContentPane().add(label);
 
 		button_1 = new JButton("Chutar");
 		frame.getRootPane().setDefaultButton(button_1);
 
-		
+
 		button_1.setBounds(177, 110, 79, 21);
 		frame.getContentPane().add(button_1);
 
@@ -94,47 +94,47 @@ public class ShowBody {
 		label_2 = new JLabel("Chances");
 		label_2.setBounds(51, 172, 103, 32);
 		frame.getContentPane().add(label_2);
-		
+
 		label_3 = new JLabel("Palavra:");
 		label_3.setBounds(51, 72, 150, 13);
 		frame.getContentPane().add(label_3);
-		
+
 		label_4 = new JLabel("Alerta: ");
-		label_4.setBounds(164, 182, 230, 13);
+		label_4.setBounds(177, 182, 217, 13);
 		frame.getContentPane().add(label_4);
-		
+
 		button_2 = new JButton("sair");
 		button_2.setBounds(309, 215, 85, 21);
 		frame.getContentPane().add(button_2);
-		
+
 		JLabel label_5 = new JLabel("Nome Imagem");
 		label_5.setHorizontalAlignment(SwingConstants.CENTER);
 		label_5.setBounds(309, 158, 103, 14);
 		frame.getContentPane().add(label_5);
 
-		
+
 		button_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
-				}});
-		
+			}});
+
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-
+					//Inicia o jogo
 					jogo = new JogoDaForca("palavras.csv");
 					jogo.iniciar();
-					System.out.println("dica da palavra=" + jogo.getDica());
-					System.out.println("tamanho da palavra=" + jogo.getTamanho());
 					letrasAdivinhadas = new String[jogo.getTamanho()];	
+					/*Muda os frames para mostrar quantas chances restam, qual o tamanho da palavra e reinicia o 
+					texto do alerta caso tenha algum erro, mostra a primeira imagem e a dica*/
 					Arrays.fill(letrasAdivinhadas, "_");
-					
+					label_3.setText("Palavra: " + Arrays.toString(letrasAdivinhadas));
+					label_2.setText("Chances: "+(6 - jogo.getPenalidade()));
+					label_4.setText("Alerta:");
 					ImageIcon icon = new ImageIcon(ShowBody.class.getResource("/imagens/" + imagens[0]));
 					icon.setImage(icon.getImage().getScaledInstance(label_1.getWidth(), label_1.getHeight(), 1));
 					label_1.setIcon(icon);
 					label_5.setText(imagens[0]);
-
-
 					label.setText("Dica: " + jogo.getDica());
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -143,58 +143,42 @@ public class ShowBody {
 
 			}});
 
-		
+
 		button_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//Pega a letra digitada, limpa o campo chute e reescreve o alerta caso tivesse algum erro
 				Chute = textField.getText();
 				textField.setText("");
 				label_4.setText("Alerta:");
 				try {
+					if (jogo == null)
+						throw new Exception ("Inicie o jogo");
 					posicoes = jogo.getPosicoes(Chute);
 					if (posicoes.size()>0) {
-						System.out.println("posicoes encontradas="+ posicoes);
 						for(int i : posicoes)
 							letrasAdivinhadas[i] = Chute;
-						System.out.println(Arrays.toString(letrasAdivinhadas));
-						System.out.println("total de acertos="+jogo.getAcertos());
-						label_3.setText(Arrays.toString(letrasAdivinhadas));
-						}
-						
-					 
+						label_3.setText("Palavra: " + Arrays.toString(letrasAdivinhadas));
+					}
 					else {
-						System.out.println("voce errou - penalidade="+jogo.getPenalidade()+", retirar "+ penalidades[jogo.getPenalidade()-1]);
+						int index = jogo.getPenalidade();
+						ImageIcon icon = new ImageIcon(ShowBody.class.getResource("/imagens/" + imagens[index]));
+						icon.setImage(icon.getImage().getScaledInstance(label_1.getWidth(), label_1.getHeight(), 1));
+						label_1.setIcon(icon);
+						label_5.setText(imagens[index]);
+						label_2.setText("Chances: "+(6 - jogo.getPenalidade()));
 					}
-					
-					int index = jogo.getPenalidade();
-					ImageIcon icon = new ImageIcon(ShowBody.class.getResource("/imagens/" + imagens[index]));
-					icon.setImage(icon.getImage().getScaledInstance(label_1.getWidth(), label_1.getHeight(), 1));
-					label_1.setIcon(icon);
-					label_5.setText(imagens[index]);
-					label_2.setText("Chances: "+(6 - jogo.getPenalidade()));
-					
-					if(jogo.terminou() == true ) {
-						 
-						Object mensagem = "\n           ---- game over ----" + 
-			                      "\nresultado final = " + jogo.getResultado() + 
-			                      "\nsituacao final = " + Arrays.toString(letrasAdivinhadas);;
-						JOptionPane.showMessageDialog(null, mensagem);
-					}
-					
 
+					if(jogo.terminou() == true ) {
+						Object mensagem = "\n           ---- game over ----" + 
+								"\nresultado final = " + jogo.getResultado() + 
+								"\nsituacao final = " + Arrays.toString(letrasAdivinhadas);;
+								JOptionPane.showMessageDialog(null, mensagem);
+					}					
 				}
 				catch(Exception e1) {
 					label_4.setText("Alerta: " + e1.getMessage());			
 				}
 			}
 		});
-//		button_3 = new JButton("Reset");
-//		button_3.setBounds(171, 215, 85, 21);
-//		frame.getContentPane().add(button_3);
-//		button_3.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				frame.removeAll();
-//				}});
-		
-		
 	}
 }
